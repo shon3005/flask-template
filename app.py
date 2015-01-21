@@ -21,6 +21,7 @@ class Logger(db.Model):
 
 
 @app.route("/index")
+@app.route("/")
 def index():
 	if request.headers.getlist("X-Forwarded-For"):
    		ip = request.headers.getlist("X-Forwarded-For")[0]
