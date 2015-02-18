@@ -1,24 +1,9 @@
 from flask import Flask, render_template, request
-from flask.ext.sqlalchemy import SQLAlchemy
 import os
 import datetime
+from syncano import client
+SyncanoApi = client.SyncanoApi
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ['DATABASE_URL']
-db = SQLAlchemy(app)
-
-#http://blog.y3xz.com/blog/2012/08/16/flask-and-postgresql-on-heroku
-
-class Logger(db.Model):
-	id = db.Column(db.Integer, primary_key=True)
-	ip_address = db.Column(db.String(400))
-	timestamp = db.Column(db.DateTime, default=datetime.datetime.now)
-
-	def __init__(self,ip_address):
-		self.ip_address = ip_address
-
-	def __repr__(self):
-		return '<ip_addr %r>' % self.ip_address
-
 
 @app.route("/index")
 @app.route("/")
@@ -29,12 +14,11 @@ def index():
 		ip = request.access_route
 	else:
    		ip = request.remote_addr
-	log = Logger(ip)
-	db.session.add(log)
-	db.session.commit()
+	syncano = SyncanoApi("cold-dew-135677","c418ff4e58fb13638c549b41300a918fc60aa84e")
+	project_id = "5941"
+	collection_id = "18472"
+	syncano.data_new(project_id,collection_id=collection_id,title=ip,text=str(datatime.datetime.now()))
 	return render_template("index.html")
-
-
 
 
 if __name__ == '__main__':
